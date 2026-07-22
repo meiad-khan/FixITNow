@@ -1,0 +1,14 @@
+model User {
+  id                String             @id @default(uuid())
+  name              String
+  email             String             @unique
+  phone             String?            @unique
+  password          String
+  role              Role               @default(CUSTOMER)
+  userStatus        UserStatus         @default(UNBAN)
+  technicianProfile TechnicianProfile?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@map("users")
+}
