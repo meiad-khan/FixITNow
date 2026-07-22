@@ -8,3 +8,42 @@ enum UserStatus {
   BAN
   UNBAN
 }
+
+enum CategoryStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum ServiceStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum BookingStatus {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+  PAID
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  STRIPE
+  SSLCOMMERZ
+}
+
+enum PaymentMethod {
+  CARD
+  BKASH
+  NAGAD
+  BANK
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
