@@ -40,11 +40,14 @@ const loginUser = async (payload: {
   phone?:string
 }) => {
   const {email, password, phone} = payload;
-  const user = await prisma.user.findUniqueOrThrow({
+  const user = await prisma.user.findUnique({
     where: {
       email
     }
   })
+  if (!user) {
+    throw new Error("Invalid credential");
+  }
   if (user.userStatus === "BAN") {
     throw new Error("You are banned. Please contact with support");
   }
@@ -61,7 +64,7 @@ const loginUser = async (payload: {
     role: user.role,
   } as JwtPayload;
 
-  const accesToken = jwt.sign(jwtPayload, config.jwt_access_secret, {
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret, {
     expiresIn: config.jwt_access_expires_in
   }as SignOptions )
   
@@ -69,15 +72,20 @@ const loginUser = async (payload: {
     expiresIn: config.jwt_refresh_expires_in
   } as SignOptions);
   return {
-    accesToken,
+    accessToken,
     refreshToken
   }
 
+}
+
+const getProfile = async (userId: string) => {
+  
 }
 
 
 
 export const authServices = {
   registerUser,
-  loginUser
+  loginUser,
+  getProfile,
 }
