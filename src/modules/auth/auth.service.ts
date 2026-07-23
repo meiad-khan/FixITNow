@@ -1,13 +1,21 @@
 import { Role } from "../../../prisma/generated/prisma/enums";
 import { config } from "../../config";
+import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma"
 import { IRegisterPayload } from "./auth.interface"
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
+import httpStatus from "http-status";
 
 const registerUser = async (payload:IRegisterPayload) => {
   const { email, phone, password } = payload;
   const role = payload.role?.toUpperCase() as Role;
+  if (role === Role.ADMIN) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You cannot register as an admin.",
+    );
+  }
   const isUserExist = await prisma.user.findUnique({
     where: {
       email,
@@ -15,7 +23,7 @@ const registerUser = async (payload:IRegisterPayload) => {
     }
   })
   if (isUserExist) {
-    throw new Error("User with this email/phone already exist");
+    throw new AppError(httpStatus.CONFLICT, "User already exists");
   }
   const hashedPassword = await bcrypt.hash(
     password,
@@ -46,14 +54,17 @@ const loginUser = async (payload: {
     }
   })
   if (!user) {
-    throw new Error("Invalid credential");
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
   if (user.userStatus === "BAN") {
-    throw new Error("You are banned. Please contact with support");
+     throw new AppError(
+       httpStatus.FORBIDDEN,
+       "Your account has been banned. Please contact support.",
+     );
   }
   const isPassMatch = await bcrypt.compare(password, user.password);
   if (!isPassMatch) {
-    throw new Error("Password is invalid");
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
 
   const jwtPayload = {
@@ -79,7 +90,15 @@ const loginUser = async (payload: {
 }
 
 const getProfile = async (userId: string) => {
-  
+  const result = await prisma.user.findUnique({
+    where: {
+      id: userId
+    },
+    include: {
+      technicianProfile: true
+    }
+  });
+  return result;
 }
 
 

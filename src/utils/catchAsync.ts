@@ -5,14 +5,15 @@ export const catchAsync = (fn: RequestHandler) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       await fn(req, res, next);
-    } catch (error:any) {
-      console.log("error from catchAsync ", error);
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-          successCode: httpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message,
-          errorDetails: error.stack,
-      });
+    } catch (error) {
+      // console.log("error from catchAsync ", error);
+      // res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).json({
+      //   success: false,
+      //   successCode: error.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
+      //   message: error.message,
+      //   errorDetails: error.stack,
+      // });
+      next(error);
     }
   }
 }
