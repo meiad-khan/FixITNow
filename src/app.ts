@@ -4,6 +4,7 @@ import { config } from "./config";
 import cookieParser from "cookie-parser";
 import { authRoutes } from "./modules/auth/auth.route";
 import { globalError } from "./middlewares/globalError";
+import { categoryRoutes } from "./modules/category/category.route";
 
 export const app: Application = express();
 
@@ -19,5 +20,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/category", categoryRoutes);
 
 app.use(globalError);
