@@ -132,6 +132,12 @@ const changeBookingStatus = async (userId:string, bookingId:string, payload:{sta
   }
   const {status } = payload;
   const upperStatus = status?.toUpperCase() as BookingStatus;
+  if (upperStatus === isBookingExist.status) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Status already updated"
+    )
+  }
   const result = await prisma.booking.update({
     where: {
       id: bookingId
