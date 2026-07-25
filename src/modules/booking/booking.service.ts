@@ -42,7 +42,54 @@ const getUserBooking = async (userId: string) => {
   return result;
 }
 
+const getSingleBooking = async (id: string) => {
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id,      
+    },
+    include: {
+      service: {
+        select: {
+          id: true,
+          serviceName: true,
+          technician: {
+            select: {
+              id: true,
+              location: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone:true,
+                }
+              }
+            }
+          }
+        }
+      },
+      payments: {
+        select: {
+          status:true
+        }
+      },
+      review: {
+        select: {
+          id: true,
+          reviewText: true,
+          rating:true
+        }
+      }
+    }
+  });
+  if (!booking) {
+     throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+  return booking;
+}
+
 export const bookingServices = {
   createBooking,
   getUserBooking,
+  getSingleBooking
 }

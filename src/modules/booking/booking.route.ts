@@ -17,4 +17,10 @@ router.get(
   bookingController.getUserBooking
 );
 
+router.get(
+  "/:bookingId",
+  auth(Role.CUSTOMER),
+  bookingController.getSingleBooking
+);
+
 export const bookingRoutes = router;
