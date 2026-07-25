@@ -29,5 +29,11 @@ router.get(
   bookingController.getSingleBooking
 );
 
+router.patch(
+  "/:bookingId",
+  auth(Role.TECHNICIAN),
+  bookingController.changeBookingStatus
+);
+
 
 export const bookingRoutes = router;

@@ -1,3 +1,4 @@
+import { BookingStatus } from "../../../prisma/generated/prisma/enums";
 import AppError from "../../errors/AppError"
 import { prisma } from "../../lib/prisma"
 import { ICreateBooking } from "./booking.interface"
@@ -109,9 +110,43 @@ const getTechnicianBookings = async (id: string) => {
   return result;
 };
 
+const changeBookingStatus = async (userId:string, bookingId:string, payload:{status:string}) => {
+  const isTechnicianExist = await prisma.technicianProfile.findUnique({
+    where: {
+      userId
+    }
+  });
+  if (!isTechnicianExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Technician not found"
+    )
+  }
+  const isBookingExist = await prisma.booking.findUnique({
+    where: {
+      id:bookingId
+    }
+  })
+  if (!isBookingExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+  const {status } = payload;
+  const upperStatus = status?.toUpperCase() as BookingStatus;
+  const result = await prisma.booking.update({
+    where: {
+      id: bookingId
+    },
+    data: {
+      status:upperStatus
+    }
+  });
+  return result;
+}
+
 export const bookingServices = {
   createBooking,
   getUserBooking,
   getSingleBooking,
-  getTechnicianBookings
+  getTechnicianBookings,
+  changeBookingStatus,
 }
