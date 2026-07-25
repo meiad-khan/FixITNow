@@ -25,9 +25,30 @@ const getAllTechnician = catchAsync(async (req: Request, res: Response, next: Ne
     data: result,
   });
 })
+const updateTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const result = await technicianServices.updateTechnicianProfile(req.user?.id as string, req.body);
+  res.status(httpStatus.OK).json({
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Technician profile updated successfully",
+    data: result,
+  });
+})
 
+const getSingleTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const { technicianId } = req.params;
+  const result = await technicianServices.getSingleTechnicianProfile(technicianId as string);
+  res.status(httpStatus.OK).json({
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Technician Profile with reviews retrieved successfully",
+    data: result,
+  });
+})
 
 export const technicianController = {
   createTechnicianProfile,
   getAllTechnician,
+  updateTechnicianProfile,
+  getSingleTechnicianProfile
 }

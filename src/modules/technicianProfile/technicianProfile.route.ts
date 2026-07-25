@@ -13,6 +13,17 @@ router.post(
 router.get(
   "/",
   technicianController.getAllTechnician
-)
+);
+
+router.put(
+  "/profile",
+  auth(Role.TECHNICIAN),
+  technicianController.updateTechnicianProfile
+);
+
+router.get(
+  "/:technicianId",
+  technicianController.getSingleTechnicianProfile
+);
 
 export const technicianRoutes = router;

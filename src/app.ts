@@ -7,6 +7,7 @@ import { globalError } from "./middlewares/globalError";
 import { categoryRoutes } from "./modules/category/category.route";
 import { serviceRoutes } from "./modules/service/service.route";
 import { technicianRoutes } from "./modules/technicianProfile/technicianProfile.route";
+import { bookingRoutes } from "./modules/booking/booking.route";
 
 export const app: Application = express();
 
@@ -25,5 +26,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/technician", technicianRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/booking", bookingRoutes);
 
 app.use(globalError);
