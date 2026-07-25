@@ -18,9 +18,16 @@ router.get(
 );
 
 router.get(
+  "/technician",
+  auth(Role.TECHNICIAN),
+  bookingController.getTechnicianBookings,
+);
+
+router.get(
   "/:bookingId",
   auth(Role.CUSTOMER),
   bookingController.getSingleBooking
 );
+
 
 export const bookingRoutes = router;

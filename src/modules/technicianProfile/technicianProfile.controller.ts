@@ -46,9 +46,11 @@ const getSingleTechnicianProfile = catchAsync(async (req: Request, res: Response
   });
 })
 
+
+
 export const technicianController = {
   createTechnicianProfile,
   getAllTechnician,
   updateTechnicianProfile,
-  getSingleTechnicianProfile
+  getSingleTechnicianProfile,
 }

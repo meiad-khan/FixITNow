@@ -88,8 +88,30 @@ const getSingleBooking = async (id: string) => {
   return booking;
 }
 
+const getTechnicianBookings = async (id: string) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId:id
+    },
+  });
+  if (!technician) {
+    throw new AppError(httpStatus.NOT_FOUND, "Technician not found");
+  }
+  const result = await prisma.booking.findMany({
+    where: {
+      service: {
+        technician: {
+         userId:id
+       }
+      },
+    },
+  });
+  return result;
+};
+
 export const bookingServices = {
   createBooking,
   getUserBooking,
-  getSingleBooking
+  getSingleBooking,
+  getTechnicianBookings
 }

@@ -82,6 +82,7 @@ const getSingleTechnicianProfile = async (id:string) => {
   }
 }
 
+
 export const technicianServices = {
   createTechnicianProfile,
   getAllTechnician,
