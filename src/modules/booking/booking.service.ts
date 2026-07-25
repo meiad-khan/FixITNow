@@ -1,4 +1,4 @@
-import { BookingStatus } from "../../../prisma/generated/prisma/enums";
+import { BookingStatus, UserStatus } from "../../../prisma/generated/prisma/enums";
 import AppError from "../../errors/AppError"
 import { prisma } from "../../lib/prisma"
 import { ICreateBooking } from "./booking.interface"
@@ -16,6 +16,12 @@ const createBooking = async (userId:string, payload:ICreateBooking) => {
       httpStatus.NOT_FOUND,
       "User not found"
     )
+  }
+  if (isUserExist.userStatus !== UserStatus.UNBAN) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Your user status is currently banned. Please contact with support"
+    );
   }
   const result = await prisma.booking.create({
     data: {
@@ -35,6 +41,12 @@ const getUserBooking = async (userId: string) => {
    if (!isUserExist) {
      throw new AppError(httpStatus.NOT_FOUND, "User not found");
    }
+  if (isUserExist.userStatus !== UserStatus.UNBAN) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Your user status is currently banned. Please contact with support",
+    );
+  }
   const result = await prisma.booking.findMany({
     where: {
       userId
@@ -43,10 +55,11 @@ const getUserBooking = async (userId: string) => {
   return result;
 }
 
-const getSingleBooking = async (id: string) => {
+const getSingleBooking = async (bookingId: string) => {
+
   const booking = await prisma.booking.findUnique({
     where: {
-      id,      
+      id: bookingId,      
     },
     include: {
       service: {
