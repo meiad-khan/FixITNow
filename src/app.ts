@@ -26,6 +26,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/technician", technicianRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/services", serviceRoutes);
-app.use("/api/booking", bookingRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 app.use(globalError);
