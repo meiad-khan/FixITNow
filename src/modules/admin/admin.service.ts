@@ -38,7 +38,13 @@ const updateUserStatus = async (id: string, payload:{userStatus:string}) => {
   return result;
 }
 
+const getAllBookings = async () => {
+  const result = await prisma.booking.findMany();
+  return result;
+}
+
 export const adminServices = {
   getAllUsers,
   updateUserStatus,
+  getAllBookings,
 }

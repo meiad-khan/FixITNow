@@ -28,9 +28,21 @@ const updateUserStatus = catchAsync(
     });
   },
 );
+const getAllBookings = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+   const result=await adminServices.getAllBookings()
+    res.status(httpStatus.OK).json({
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "All bookings retrieved successfully",
+      data: result,
+    });
+  },
+);
 
 
 export const adminController = {
   getAllUsers,
   updateUserStatus,
+  getAllBookings,
 }

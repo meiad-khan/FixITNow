@@ -50,8 +50,6 @@ export const auth =(...roles: Role[]) => {
       where: {
         id,
         email,
-        name,
-        role
       }
     });
     if (!user) {
