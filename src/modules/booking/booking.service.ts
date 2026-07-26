@@ -19,7 +19,7 @@ const createBooking = async (userId:string, payload:ICreateBooking) => {
   }
   if (isUserExist.userStatus !== UserStatus.UNBAN) {
     throw new AppError(
-      httpStatus.UNAUTHORIZED,
+      httpStatus.FORBIDDEN,
       "Your user status is currently banned. Please contact with support"
     );
   }
@@ -43,7 +43,7 @@ const getUserBooking = async (userId: string) => {
    }
   if (isUserExist.userStatus !== UserStatus.UNBAN) {
     throw new AppError(
-      httpStatus.UNAUTHORIZED,
+      httpStatus.FORBIDDEN,
       "Your user status is currently banned. Please contact with support",
     );
   }

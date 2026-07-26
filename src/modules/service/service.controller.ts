@@ -16,12 +16,13 @@ const createService = catchAsync(async (req: Request, res: Response, next: NextF
 
 const getAllServices = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await serviceServices.getAllServices();
+    const result = await serviceServices.getAllServices(req.query);
     res.status(httpStatus.OK).json({
       success: true,
       statusCode: httpStatus.OK,
       message: "Services retrieved successfully",
-      data: result,
+      data: result.data,
+      meta:result.meta
     });
   },
 );
