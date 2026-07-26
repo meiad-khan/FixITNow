@@ -1,7 +1,7 @@
 import { ServiceWhereInput } from "../../../prisma/generated/prisma/models";
 import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
-import { ICreateService, IQueryPayload } from "./service.interface";
+import { ICreateService, ServiceQueryPayload } from "./service.interface";
 import httpStatus from "http-status";
 
 const createService = async (payload: ICreateService) => {
@@ -31,7 +31,7 @@ const createService = async (payload: ICreateService) => {
   return result;
 }
 
-const getAllServices = async (query : IQueryPayload) => {
+const getAllServices = async (query : ServiceQueryPayload) => {
 
   const limit = query.limit ? Number(query.limit) : 5;
   const page = query.page ? Number(query.page) : 1;

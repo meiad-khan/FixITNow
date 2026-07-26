@@ -10,7 +10,7 @@ export interface ICreateService {
   status?: ServiceStatus;
 }
 
-export interface IQueryPayload {
+export interface ServiceQueryPayload {
   searchTerm?: string;
   category?: string;
   location?: string;

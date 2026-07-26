@@ -17,7 +17,7 @@ const createTechnicianProfile = catchAsync(async (req: Request, res: Response, n
 })
 
 const getAllTechnician = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const result = await technicianServices.getAllTechnician();
+  const result = await technicianServices.getAllTechnician(req.query);
   res.status(httpStatus.OK).json({
     success: true,
     statusCode: httpStatus.OK,

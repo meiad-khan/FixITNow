@@ -21,3 +21,17 @@ interface IAvailability {
   saturday?: string[];
   sunday?: string[];
 }
+
+export interface TechnicianQueryPayload{
+  searchTerm?: string;
+  location?: string;
+  category?: string;
+  serviceName?: string;
+  minExperience?: string;
+  maxExperience?: string;
+  
+  page?: string;
+  limit?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}
