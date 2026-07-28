@@ -1,58 +1,55 @@
-import { BookingStatus, UserStatus } from "../../../prisma/generated/prisma/enums";
-import AppError from "../../errors/AppError"
-import { prisma } from "../../lib/prisma"
-import { ICreateBooking } from "./booking.interface"
+import { Prisma } from "../../../prisma/generated/prisma/client";
+import {
+  BookingStatus,
+  UserStatus,
+} from "../../../prisma/generated/prisma/enums";
+import AppError from "../../errors/AppError";
+import { prisma } from "../../lib/prisma";
+import { ICreateBooking } from "./booking.interface";
 import httpStatus from "http-status";
 
-
-const createBooking = async (userId:string, payload:ICreateBooking) => {
+const createBooking = async (userId: string, payload: ICreateBooking) => {
   const isUserExist = await prisma.user.findUnique({
     where: {
-      id:userId
-    }
-  })
+      id: userId,
+    },
+  });
   if (!isUserExist) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "User not found"
-    )
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
   if (isUserExist.userStatus !== UserStatus.UNBAN) {
     throw new AppError(
       httpStatus.FORBIDDEN,
-      "Your user status is currently banned. Please contact with support"
+      "Your user status is currently banned. Please contact with support",
     );
   }
   const service = await prisma.service.findUnique({
     where: {
-      id:payload.serviceId
-    }
-  })
+      id: payload.serviceId,
+    },
+  });
   if (!service) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Service record not found"
-    )
+    throw new AppError(httpStatus.NOT_FOUND, "Service record not found");
   }
   const result = await prisma.booking.create({
     data: {
       userId,
       ...payload,
-      price:service.basePrice
-    }
+      price: service.basePrice,
+    },
   });
   return result;
-}
+};
 
 const getUserBooking = async (userId: string) => {
-   const isUserExist = await prisma.user.findUnique({
-     where: {
-       id: userId,
-     },
-   });
-   if (!isUserExist) {
-     throw new AppError(httpStatus.NOT_FOUND, "User not found");
-   }
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!isUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
   if (isUserExist.userStatus !== UserStatus.UNBAN) {
     throw new AppError(
       httpStatus.FORBIDDEN,
@@ -61,17 +58,16 @@ const getUserBooking = async (userId: string) => {
   }
   const result = await prisma.booking.findMany({
     where: {
-      userId
-    }
+      userId,
+    },
   });
   return result;
-}
+};
 
 const getSingleBooking = async (bookingId: string) => {
-
   const booking = await prisma.booking.findUnique({
     where: {
-      id: bookingId,      
+      id: bookingId,
     },
     include: {
       service: {
@@ -87,37 +83,37 @@ const getSingleBooking = async (bookingId: string) => {
                   id: true,
                   name: true,
                   email: true,
-                  phone:true,
-                }
-              }
-            }
-          }
-        }
+                  phone: true,
+                },
+              },
+            },
+          },
+        },
       },
       payments: {
         select: {
-          status:true
-        }
+          status: true,
+        },
       },
       review: {
         select: {
           id: true,
           reviewText: true,
-          rating:true
-        }
-      }
-    }
+          rating: true,
+        },
+      },
+    },
   });
   if (!booking) {
-     throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
   }
   return booking;
-}
+};
 
 const getTechnicianBookings = async (id: string) => {
   const technician = await prisma.technicianProfile.findUnique({
     where: {
-      userId:id
+      userId: id,
     },
   });
   if (!technician) {
@@ -127,78 +123,82 @@ const getTechnicianBookings = async (id: string) => {
     where: {
       service: {
         technician: {
-         userId:id
-       }
+          userId: id,
+        },
       },
     },
   });
   return result;
 };
 
-const changeBookingStatus = async (userId:string, bookingId:string, payload:{status:string}) => {
-  const isTechnicianExist = await prisma.technicianProfile.findUnique({
+const changeBookingStatus = async (
+  userId: string,
+  bookingId: string,
+  payload: { status: string },
+) => {
+  const technician = await prisma.technicianProfile.findUnique({
     where: {
-      userId
-    }
+      userId,
+    },
   });
-  if (!isTechnicianExist) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Technician not found"
-    )
+  if (!technician) {
+    throw new AppError(httpStatus.NOT_FOUND, "Technician not found");
   }
-  const isBookingExist = await prisma.booking.findUnique({
+  const booking = await prisma.booking.findUnique({
     where: {
-      id:bookingId
-    }
-  })
-  if (!isBookingExist) {
+      id: bookingId,
+    },
+  });
+  if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
   }
-  const {status } = payload;
+  const { status } = payload;
   const upperStatus = status?.toUpperCase() as BookingStatus;
-  if (upperStatus === isBookingExist.status) {
+  if (upperStatus === booking.status) {
+    throw new AppError(httpStatus.CONFLICT, "Status already updated");
+  }
+
+  const allowedTransitions: Record<BookingStatus, BookingStatus[]> = {
+    REQUESTED: [BookingStatus.ACCEPTED, BookingStatus.DECLINED],
+    ACCEPTED: [],
+    PAID: [BookingStatus.IN_PROGRESS],
+    IN_PROGRESS: [BookingStatus.COMPLETED],
+    COMPLETED: [],
+    DECLINED: [],
+    CANCELLED: [],
+  };
+
+  const allowed = allowedTransitions[booking.status];
+
+  if (!allowed.includes(upperStatus)) {
     throw new AppError(
-      httpStatus.CONFLICT,
-      "Status already updated"
-    )
+      httpStatus.BAD_REQUEST,
+      `Cannot change booking status from ${booking.status} to ${upperStatus}.`,
+    );
   }
-  if (upperStatus === BookingStatus.ACCEPTED) {
-    const result = await prisma.booking.update({
-      where: {
-        id: bookingId,
-      },
-      data: {
-        status: upperStatus,
-        acceptedAt:new Date(),
-      },
-    });
-    return result;
-  } else if (upperStatus === BookingStatus.CANCELLED) {
-     const result = await prisma.booking.update({
-       where: {
-         id: bookingId,
-       },
-       data: {
-         status: upperStatus,
-         cancelledAt: new Date(),
-       },
-     });
-     return result;
-  } else {
-     const result = await prisma.booking.update({
-       where: {
-         id: bookingId,
-       },
-       data: {
-         status: upperStatus,
-         acceptedAt: new Date(),
-       },
-     });
-     return result;
+
+  const data: Prisma.BookingUpdateInput = {
+    status: upperStatus,
+  };
+
+  switch (upperStatus) {
+    case BookingStatus.ACCEPTED:
+      data.acceptedAt = new Date();
+      break;
+
+    case BookingStatus.COMPLETED:
+      data.completedAt = new Date();
+      break;
   }
-  
-}
+  const result = await prisma.booking.update({
+    where: {
+      id: bookingId,
+    },
+    data,
+  });
+
+  return result;
+};
 
 export const bookingServices = {
   createBooking,
@@ -206,4 +206,4 @@ export const bookingServices = {
   getSingleBooking,
   getTechnicianBookings,
   changeBookingStatus,
-}
+};
