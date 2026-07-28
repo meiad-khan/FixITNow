@@ -75,9 +75,9 @@ const initiatePayment = async (
     total_amount: amount,
     currency: "BDT",
     tran_id: tranId,
-    success_url: `${config.app_url}/api/payment/success?tran_id=${tranId}`,
-    fail_url: `${config.app_url}/api/payment/fail?tran_id=${tranId}`,
-    cancel_url: `${config.app_url}/api/payment/cancel?tran_id=${tranId}`,
+    success_url: `${config.app_url}/api/payment/success`,
+    fail_url: `${config.app_url}/api/payment/fail`,
+    cancel_url: `${config.app_url}/api/payment/cancel`,
     ipn_url: `${config.app_url}/api/payment/ipn`,
     shipping_method: "NO",
     product_name: booking.service.serviceName || "Service Booking",
@@ -120,14 +120,53 @@ const validatePayment = async (tran_id: string, val_id:string) => {
   const validationUrl = `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${config.ssl_commerz_store_id}&store_passwd=${config.ssl_commerz_store_passwd}&format=json`;
 
 
-  const data = await axios.get<TSSLCommerzValidationResponse>(validationUrl);
-  console.log(data);
+  const {data} = await axios.get<TSSLCommerzValidationResponse>(validationUrl);
+  // console.log(data);
   const existingPayment = await prisma.payment.findUnique({
     where: { transactionId:tran_id },
   });
 
   if (!existingPayment) {
     throw new AppError(httpStatus.NOT_FOUND, "Payment record not found!");
+  }
+  if (existingPayment.status === PaymentStatus.COMPLETED) {
+    return existingPayment;
+  }
+
+  const isValidStatus = data.status === "VALID" || data.status === "VALIDATED";
+  const isValidAmount = Number(data.amount) === Number(existingPayment.amount);
+
+  if (isValidStatus && isValidAmount) {
+    const transactionResult = await prisma.$transaction(
+      async (tx) => {
+        const payment = await tx.payment.update({
+          where: {
+            transactionId: tran_id
+          },
+          data: {
+            status: PaymentStatus.COMPLETED,
+            paidAt: new Date(),
+          }
+        });
+        const booking = await tx.booking.update({
+          where: {
+            id: existingPayment.bookingId
+          },
+          data: {
+            status: BookingStatus.PAID
+          }
+        });
+        return payment;
+      }
+    )
+    console.log("transaction ",transactionResult);
+    return transactionResult
+  } else {
+    await prisma.payment.update({
+      where: { transactionId:tran_id },
+      data: { status: PaymentStatus.FAILED },
+    });
+    throw new AppError(httpStatus.BAD_REQUEST, "Payment validation failed!");
   }
 }
 

@@ -17,9 +17,9 @@ const initPayment = catchAsync(async (req: Request, res: Response, next: NextFun
 
 
 const handleSuccess = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  console.log("METHOD:", req.method);
-  console.log("BODY:", req.body);
-  console.log("QUERY:", req.query);
+  // console.log("METHOD:", req.method);
+  // console.log("BODY:", req.body);
+  // console.log("QUERY:", req.query);
   const { val_id, tran_id } = req.body;
   await paymentService.validatePayment(tran_id, val_id);
   res.send(`
