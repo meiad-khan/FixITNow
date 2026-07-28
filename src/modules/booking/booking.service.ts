@@ -23,10 +23,22 @@ const createBooking = async (userId:string, payload:ICreateBooking) => {
       "Your user status is currently banned. Please contact with support"
     );
   }
+  const service = await prisma.service.findUnique({
+    where: {
+      id:payload.serviceId
+    }
+  })
+  if (!service) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Service record not found"
+    )
+  }
   const result = await prisma.booking.create({
     data: {
       userId,
-      ...payload
+      ...payload,
+      price:service.basePrice
     }
   });
   return result;

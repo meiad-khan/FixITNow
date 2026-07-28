@@ -13,4 +13,6 @@ export const config = {
   jwt_refresh_secret: env.JWT_REFRESH_SECRET!,
   jwt_access_expires_in: env.JWT_ACCESS_EXPIRES_IN!,
   jwt_refresh_expires_in: env.JWT_REFRESH_EXPIRES_IN!,
+  ssl_commerz_store_id: env.SSL_COMMERZ_STORE_ID,
+  ssl_commerz_store_passwd: env.SSL_COMMERZ_STORE_PASSWD,
 };

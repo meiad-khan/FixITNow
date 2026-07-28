@@ -9,6 +9,7 @@ import { serviceRoutes } from "./modules/service/service.route";
 import { technicianRoutes } from "./modules/technicianProfile/technicianProfile.route";
 import { bookingRoutes } from "./modules/booking/booking.route";
 import { adminRoutes } from "./modules/admin/admin.route";
+import { paymentRoutes } from "./modules/payment/payment.routes";
 
 export const app: Application = express();
 
@@ -16,6 +17,7 @@ app.use(cors({
   origin: config.app_url,
   credentials:true
 }))
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,5 +31,6 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.use(globalError);
