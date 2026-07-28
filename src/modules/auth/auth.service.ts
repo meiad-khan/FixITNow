@@ -89,6 +89,49 @@ const loginUser = async (payload: {
 
 }
 
+const refreshAccessToken = async (refreshToken: string) => {
+
+  if (!refreshToken) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is required.");
+  }
+  const verifyToken = jwt.verify(refreshToken, config.jwt_refresh_secret as string) as JwtPayload;
+  // console.log("verify token ", verifyToken);
+  if (!verifyToken) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or expired token.");
+  }
+  // console.log(verifyToken);
+  const {id} = verifyToken;
+  const user = await prisma.user.findUnique({
+    where: {
+      id
+    }
+  });
+
+  if (!user) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Please login first"
+    )
+  }
+  if (user.userStatus === "BAN") {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "You are banned. Please contact with support",
+    );
+  }
+  const jwtPayload = {
+    id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
+    expiresIn: config.jwt_access_expires_in
+  } as SignOptions);
+  return {accessToken}
+}
+
+
 const getProfile = async (userId: string) => {
   const result = await prisma.user.findUnique({
     where: {
@@ -101,10 +144,9 @@ const getProfile = async (userId: string) => {
   return result;
 }
 
-
-
 export const authServices = {
   registerUser,
   loginUser,
+  refreshAccessToken,
   getProfile,
 }
