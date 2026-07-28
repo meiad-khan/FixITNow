@@ -163,15 +163,41 @@ const changeBookingStatus = async (userId:string, bookingId:string, payload:{sta
       "Status already updated"
     )
   }
-  const result = await prisma.booking.update({
-    where: {
-      id: bookingId
-    },
-    data: {
-      status:upperStatus
-    }
-  });
-  return result;
+  if (upperStatus === BookingStatus.ACCEPTED) {
+    const result = await prisma.booking.update({
+      where: {
+        id: bookingId,
+      },
+      data: {
+        status: upperStatus,
+        acceptedAt:new Date(),
+      },
+    });
+    return result;
+  } else if (upperStatus === BookingStatus.CANCELLED) {
+     const result = await prisma.booking.update({
+       where: {
+         id: bookingId,
+       },
+       data: {
+         status: upperStatus,
+         cancelledAt: new Date(),
+       },
+     });
+     return result;
+  } else {
+     const result = await prisma.booking.update({
+       where: {
+         id: bookingId,
+       },
+       data: {
+         status: upperStatus,
+         acceptedAt: new Date(),
+       },
+     });
+     return result;
+  }
+  
 }
 
 export const bookingServices = {

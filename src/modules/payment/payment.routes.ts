@@ -16,5 +16,15 @@ router.post(
   paymentController.handleSuccess
 );
 
+router.post(
+  "/fail",
+  paymentController.handleFail
+);
+
+router.post(
+  "/cancel",
+  paymentController.handleCancel
+);
+
 
 export const paymentRoutes = router;

@@ -48,7 +48,8 @@ const initiatePayment = async (
       "Unauthorized! You can process only your booking",
     );
   }
-
+  // console.log("Booking ID:", booking.id);
+  // console.log("Booking Status:", booking.status);
   if (booking.status !== BookingStatus.ACCEPTED) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -159,7 +160,7 @@ const validatePayment = async (tran_id: string, val_id:string) => {
         return payment;
       }
     )
-    console.log("transaction ",transactionResult);
+    // console.log("transaction ",transactionResult);
     return transactionResult
   } else {
     await prisma.payment.update({
@@ -170,7 +171,27 @@ const validatePayment = async (tran_id: string, val_id:string) => {
   }
 }
 
+
+const updatePaymentStatus = async (tran_id: string, status: PaymentStatus) => {
+  if (status === PaymentStatus.COMPLETED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Payment already completed"
+    )
+  }
+  const result = await prisma.payment.update({
+    where: {
+      transactionId: tran_id
+    },
+    data: {
+      status
+    }
+  });
+  return result;
+}
+
 export const paymentService = {
   initiatePayment,
   validatePayment,
+  updatePaymentStatus,
 };
