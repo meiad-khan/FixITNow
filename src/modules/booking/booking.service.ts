@@ -200,10 +200,47 @@ const changeBookingStatus = async (
   return result;
 };
 
+const cancelBooking = async (userId: string,  bookingId:string) => {
+  const booking = await prisma.booking.findFirst({
+    where: {
+      id: bookingId,
+      userId
+    }
+  });
+  if (!booking) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Booking not found"
+    )
+  }
+  if (
+    booking.status === BookingStatus.IN_PROGRESS ||
+    booking.status === BookingStatus.COMPLETED ||
+    booking.status === BookingStatus.DECLINED ||
+    booking.status === BookingStatus.CANCELLED
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "This booking cannot be cancelled.",
+    );
+  }
+  const result = await prisma.booking.update({
+    where: {
+      id: bookingId
+    },
+    data: {
+      status:BookingStatus.CANCELLED,
+      cancelledAt:new Date(),
+    }
+  });
+  return result;
+}
+
 export const bookingServices = {
   createBooking,
   getUserBooking,
   getSingleBooking,
   getTechnicianBookings,
   changeBookingStatus,
+  cancelBooking,
 };

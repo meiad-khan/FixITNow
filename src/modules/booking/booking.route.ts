@@ -35,5 +35,11 @@ router.patch(
   bookingController.changeBookingStatus
 );
 
+router.patch(
+  "/:bookingId/cancel",
+  auth(Role.CUSTOMER),
+  bookingController.handleCancelBooking
+);
+
 
 export const bookingRoutes = router;

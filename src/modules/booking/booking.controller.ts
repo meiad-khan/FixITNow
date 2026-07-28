@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { bookingServices } from "./booking.service";
 import httpStatus from "http-status";
+import { BookingStatus } from "../../../prisma/generated/prisma/enums";
 
 const createBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -72,10 +73,24 @@ const changeBookingStatus = catchAsync(
   },
 );
 
+const handleCancelBooking=catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user?.id;
+    const bookingId = req.params.bookingId;
+    const result = await bookingServices.cancelBooking(userId as string, bookingId as string);
+     res.status(httpStatus.OK).json({
+       success: true,
+       statusCode: httpStatus.OK,
+       message: "Booking' cancelled successfully",
+       data: result,
+     });
+  })
+
 export const bookingController = {
   createBooking,
   getUserBooking,
   getSingleBooking,
   getTechnicianBookings,
   changeBookingStatus,
+  handleCancelBooking,
 };
