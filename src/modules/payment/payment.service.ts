@@ -190,8 +190,31 @@ const updatePaymentStatus = async (tran_id: string, status: PaymentStatus) => {
   return result;
 }
 
+const getUsersPayment = async (userId:string) => {
+  const payments = await prisma.payment.findMany({
+    where: {
+      booking: {
+        userId
+      }
+    },
+    include: {
+      booking: {
+        select: {
+          service: {
+            select: {
+              serviceName: true
+            }
+          }
+        }
+      }
+    }
+  });
+  return payments;
+}
+
 export const paymentService = {
   initiatePayment,
   validatePayment,
   updatePaymentStatus,
+  getUsersPayment,
 };

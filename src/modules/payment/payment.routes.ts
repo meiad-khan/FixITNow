@@ -5,6 +5,8 @@ import { paymentController } from "./payment.controller";
 
 const router = Router();
 
+router.get("/", auth(Role.CUSTOMER), paymentController.getUsersPayment);
+
 router.post(
   "/init",
   auth(Role.CUSTOMER),
@@ -25,6 +27,5 @@ router.post(
   "/cancel",
   paymentController.handleCancel
 );
-
 
 export const paymentRoutes = router;

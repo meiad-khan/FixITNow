@@ -62,10 +62,20 @@ const handleCancel = catchAsync(
   },
 );
 
+const getUsersPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const result = await paymentService.getUsersPayment(req.user?.id as string);
+  res.status(httpStatus.OK).json({
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Payment history retrieved successfully.",
+    data: result,
+  });
+ })
 
 export const paymentController = {
   initPayment,
   handleSuccess,
   handleFail,
   handleCancel,
+  getUsersPayment,
 }
