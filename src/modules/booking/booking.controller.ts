@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { bookingServices } from "./booking.service";
 import httpStatus from "http-status";
 import { BookingStatus } from "../../../prisma/generated/prisma/enums";
+import { sendResponse } from "../../utils/sendResponse";
 
 const createBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -11,11 +12,12 @@ const createBooking = catchAsync(
       userId as string,
       req.body,
     );
-    res.status(httpStatus.CREATED).json({
+   
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
       message: "Booking created successfully",
-      data: result,
+      data:result
     });
   },
 );
@@ -23,7 +25,8 @@ const createBooking = catchAsync(
 const getUserBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await bookingServices.getUserBooking(req.user?.id as string);
-     res.status(httpStatus.OK).json({
+     
+     sendResponse(res, {
        success: true,
        statusCode: httpStatus.OK,
        message: "User's booking retrieved successfully",
@@ -35,12 +38,13 @@ const getUserBooking = catchAsync(
 const getSingleBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await bookingServices.getSingleBooking(req.params.bookingId as string);
-     res.status(httpStatus.OK).json({
-       success: true,
-       statusCode: httpStatus.OK,
-       message: "Booking details retrieved successfully",
-       data: result,
-     });
+     
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Booking details retrieved successfully",
+      data: result,
+    });
   },
 );
 
@@ -49,12 +53,13 @@ const getTechnicianBookings = catchAsync(
     const result = await bookingServices.getTechnicianBookings(
       req.user?.id as string,
     );
-    res.status(httpStatus.OK).json({
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Technician's bookings retrieved successfully",
-      data: result,
-    });
+
+     sendResponse(res, {
+       success: true,
+       statusCode: httpStatus.OK,
+       message: "Technician's bookings retrieved successfully",
+       data: result,
+     });
   },
 );
 
@@ -64,7 +69,8 @@ const changeBookingStatus = catchAsync(
     const { bookingId } = req.params;
     const payload = req.body;
     const result = await bookingServices.changeBookingStatus(userId as string, bookingId as string, payload);
-    res.status(httpStatus.OK).json({
+    
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "Booking's status changed successfully",
@@ -78,12 +84,13 @@ const handleCancelBooking=catchAsync(
     const userId = req.user?.id;
     const bookingId = req.params.bookingId;
     const result = await bookingServices.cancelBooking(userId as string, bookingId as string);
-     res.status(httpStatus.OK).json({
-       success: true,
-       statusCode: httpStatus.OK,
-       message: "Booking' cancelled successfully",
-       data: result,
-     });
+     
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Booking' cancelled successfully",
+      data: result,
+    });
   })
 
 export const bookingController = {

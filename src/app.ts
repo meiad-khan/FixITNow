@@ -11,6 +11,7 @@ import { bookingRoutes } from "./modules/booking/booking.route";
 import { adminRoutes } from "./modules/admin/admin.route";
 import { paymentRoutes } from "./modules/payment/payment.routes";
 import { reviewRoutes } from "./modules/review/review.route";
+import { notFound } from "./middlewares/notFound";
 
 export const app: Application = express();
 
@@ -34,5 +35,9 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
+
+
+
+app.use(notFound);
 
 app.use(globalError);

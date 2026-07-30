@@ -3,14 +3,16 @@ import { catchAsync } from "../../utils/catchAsync";
 import { paymentService } from "./payment.service";
 import httpStatus from "http-status";
 import { PaymentStatus } from "../../../prisma/generated/prisma/enums";
+import { sendResponse } from "../../utils/sendResponse";
 
 const initPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user!;
   const result = await paymentService.initiatePayment(user, req.body);
-  res.status(httpStatus.OK).json({
+  
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Payment initialized successfully. Open paymentUrl to pay.",
+    message: "Payment initialized successfully. Open paymentUrl to pay",
     data: result,
   });
 
@@ -64,7 +66,8 @@ const handleCancel = catchAsync(
 
 const getUsersPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const result = await paymentService.getUsersPayment(req.user?.id as string);
-  res.status(httpStatus.OK).json({
+  
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Payment history retrieved successfully.",
@@ -76,7 +79,8 @@ const getPaymentDetails = catchAsync(async (req: Request, res: Response, next: N
   const { paymentId } = req.params;
   const userId = req.user?.id;
   const result = await paymentService.getPaymentDetails(userId as string, paymentId as string);
-  res.status(httpStatus.OK).json({
+  
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Payment details retrieved successfully.",

@@ -2,15 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import { adminServices } from "./admin.service";
+import { sendResponse } from "../../utils/sendResponse";
 
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await adminServices.getAllUsers();
-    res.status(httpStatus.OK).json({
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "All Users retrieved successfully",
-      data: result,
+      data:result
     });
   },
 );
@@ -20,22 +21,23 @@ const updateUserStatus = catchAsync(
     const { userId } = req.params;
     const payload = req.body;
     const result=await adminServices.updateUserStatus(userId as string, payload)
-    res.status(httpStatus.OK).json({
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "User status updated successfully",
-      data: result,
+      data:result
     });
   },
 );
 const getAllBookings = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
    const result=await adminServices.getAllBookings()
-    res.status(httpStatus.OK).json({
+    
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "All bookings retrieved successfully",
-      data: result,
+      data:result
     });
   },
 );

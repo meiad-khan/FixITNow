@@ -2,17 +2,19 @@ import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { authServices } from "./auth.service";
 import httpStatus from "http-status";
+import { sendResponse } from "../../utils/sendResponse";
 
 
 const registerUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const payload = req.body;
   const result = await authServices.registerUser(payload);
-  res.status(httpStatus.CREATED).json({
+  
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: "User registration successfull",
-    data: result
-  })
+    data:result
+  });
 });
 
 const loginUser = catchAsync(
@@ -34,23 +36,24 @@ const loginUser = catchAsync(
       maxAge:7*24*60*60*1000
     })
 
-    res.status(httpStatus.OK).json({
+    sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "User login successfull",
-      data: result
-    })
+      data:result
+    });
   },
 );
 
 const getProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const result = await authServices.getProfile(req.user?.id as string);
-  res.status(httpStatus.OK).json({
+
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Profile retrieved successfully",
     data:result
-  })
+  });
 })
 
 
@@ -63,12 +66,13 @@ const refreshToken = catchAsync(async (req: Request, res: Response, next: NextFu
     sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000,
   });
-  res.status(httpStatus.OK).json({
+  
+  sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Token refreshed successfully",
     data:{accessToken}
-  })
+  });
 })
 
 
