@@ -70,7 +70,19 @@ const getUsersPayment = catchAsync(async (req: Request, res: Response, next: Nex
     message: "Payment history retrieved successfully.",
     data: result,
   });
- })
+})
+ 
+const getPaymentDetails = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const { paymentId } = req.params;
+  const userId = req.user?.id;
+  const result = await paymentService.getPaymentDetails(userId as string, paymentId as string);
+  res.status(httpStatus.OK).json({
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Payment details retrieved successfully.",
+    data: result,
+  });
+})
 
 export const paymentController = {
   initPayment,
@@ -78,4 +90,5 @@ export const paymentController = {
   handleFail,
   handleCancel,
   getUsersPayment,
+  getPaymentDetails,
 }

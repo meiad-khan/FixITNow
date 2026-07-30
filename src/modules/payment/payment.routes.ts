@@ -28,4 +28,10 @@ router.post(
   paymentController.handleCancel
 );
 
+router.get(
+  "/:paymentId",
+  auth(Role.CUSTOMER),
+  paymentController.getPaymentDetails
+);
+
 export const paymentRoutes = router;

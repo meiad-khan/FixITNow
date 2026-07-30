@@ -212,9 +212,28 @@ const getUsersPayment = async (userId:string) => {
   return payments;
 }
 
+const getPaymentDetails = async (userId: string, id: string) => {
+  const payment = await prisma.payment.findFirst({
+    where: {
+      id,
+      booking: {
+        userId
+      }
+    }
+  })
+  if (!payment) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Payment not found"
+    )
+  }
+  return payment;
+}
+
 export const paymentService = {
   initiatePayment,
   validatePayment,
   updatePaymentStatus,
   getUsersPayment,
+  getPaymentDetails,
 };
