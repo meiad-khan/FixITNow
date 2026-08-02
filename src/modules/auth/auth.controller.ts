@@ -3,7 +3,7 @@ import { catchAsync } from "../../utils/catchAsync"
 import { authServices } from "./auth.service";
 import httpStatus from "http-status";
 import { sendResponse } from "../../utils/sendResponse";
-import { registerSchema } from "./auth.validation";
+import { loginSchema, registerSchema } from "./auth.validation";
 
 
 const registerUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -20,7 +20,8 @@ const registerUser = catchAsync(async (req: Request, res: Response, next: NextFu
 
 const loginUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await authServices.loginUser(req.body);
+    const payload = loginSchema.parse(req.body);
+    const result = await authServices.loginUser(payload);
     const { accessToken, refreshToken } = result;
     
     res.cookie("accessToken", accessToken, {

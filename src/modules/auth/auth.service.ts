@@ -6,7 +6,7 @@ import { IRegisterPayload } from "./auth.interface"
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import httpStatus from "http-status";
-import { RegisterInput } from "./auth.validation";
+import { LoginInput, RegisterInput } from "./auth.validation";
 
 const registerUser = async (payload:RegisterInput) => {
   const { email, phone, password } = payload;
@@ -43,12 +43,8 @@ const registerUser = async (payload:RegisterInput) => {
   return user;
 }
 
-const loginUser = async (payload: {
-  email: string;
-  password: string;
-  phone?:string
-}) => {
-  const {email, password, phone} = payload;
+const loginUser = async (payload: LoginInput) => {
+  const {email, password} = payload;
   const user = await prisma.user.findUnique({
     where: {
       email
