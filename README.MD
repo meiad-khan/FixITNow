@@ -19,7 +19,7 @@ https://github.com/meiad-khan/FixITNow.git
 
 ## 📬 Postman Documentation / Collection
 
-https://documenter.getpostman.com/view/your-postman-id/your-doc-id
+https://documenter.getpostman.com/view/55201413/2sBY4TqHrS
 
 ---
 
