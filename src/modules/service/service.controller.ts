@@ -24,7 +24,7 @@ const getAllServices = catchAsync(
     success: true,
     statusCode: httpStatus.OK,
     message: "Services retrieved successfully",
-    data: result,
+    data: result.data,
     meta:result.meta
   });
   },
