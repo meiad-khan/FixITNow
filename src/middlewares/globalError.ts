@@ -2,15 +2,21 @@ import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import { Prisma } from "../../prisma/generated/prisma/client";
+import { ZodError } from "zod";
 
 export const globalError:ErrorRequestHandler = (err: any, req: Request, res: Response, next:NextFunction) => {
    let statusCode : number = httpStatus.INTERNAL_SERVER_ERROR;
-   let message : string = "Something went wrong";
+  let message: string = "Something went wrong";
+  let errorDetails: unknown = null;
 
    if (err instanceof AppError) {
      statusCode = err.statusCode;
      message = err.message;
-   } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+   } else if (err instanceof ZodError) {
+     statusCode = httpStatus.BAD_REQUEST,
+       message = "Validation failed";
+     errorDetails = err.issues.map((i) => ({ path: i.path.join("."), message: i.message }));
+   }else if (err instanceof Prisma.PrismaClientKnownRequestError) {
      switch (err.code) {
        case "P2002":
          statusCode = httpStatus.CONFLICT;
@@ -89,6 +95,6 @@ export const globalError:ErrorRequestHandler = (err: any, req: Request, res: Res
      success: false,
      statusCode,
      message,
-     errorDetails: err.stack,
+     errorDetails: errorDetails? errorDetails : err.stack,
    });
 }

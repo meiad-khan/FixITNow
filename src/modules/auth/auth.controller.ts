@@ -3,10 +3,11 @@ import { catchAsync } from "../../utils/catchAsync"
 import { authServices } from "./auth.service";
 import httpStatus from "http-status";
 import { sendResponse } from "../../utils/sendResponse";
+import { registerSchema } from "./auth.validation";
 
 
 const registerUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const payload = req.body;
+  const payload = registerSchema.parse(req.body);
   const result = await authServices.registerUser(payload);
   
   sendResponse(res, {

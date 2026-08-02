@@ -6,8 +6,9 @@ import { IRegisterPayload } from "./auth.interface"
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import httpStatus from "http-status";
+import { RegisterInput } from "./auth.validation";
 
-const registerUser = async (payload:IRegisterPayload) => {
+const registerUser = async (payload:RegisterInput) => {
   const { email, phone, password } = payload;
   const role = payload.role?.toUpperCase() as Role;
   if (role === Role.ADMIN) {
