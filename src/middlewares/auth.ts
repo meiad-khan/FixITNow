@@ -6,6 +6,7 @@ import { config } from "../config";
 import { prisma } from "../lib/prisma";
 import AppError from "../errors/AppError";
 import httpStatus from "http-status";
+import { jwtUtils } from "../utils/jwt";
 
 declare global{
   namespace Express{
@@ -35,7 +36,8 @@ export const auth =(...roles: Role[]) => {
         "You are not logged in. Please log in to access this resource.",
       );
     }
-    const verifyToken = jwt.verify(token, config.jwt_access_secret) as JwtPayload;
+    // const verifyToken = jwt.verify(token, config.jwt_access_secret) as JwtPayload;
+    const verifyToken = jwtUtils.verifyToken(token, config.jwt_access_secret) as JwtPayload;
     if (!verifyToken) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or expired token.");
     }

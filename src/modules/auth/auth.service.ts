@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 import httpStatus from "http-status";
 import { LoginInput, RegisterInput } from "./auth.validation";
+import { jwtUtils } from "../../utils/jwt";
 
 const registerUser = async (payload:RegisterInput) => {
   const { email, phone, password } = payload;
@@ -72,13 +73,15 @@ const loginUser = async (payload: LoginInput) => {
     role: user.role,
   } as JwtPayload;
 
-  const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret, {
-    expiresIn: config.jwt_access_expires_in
-  }as SignOptions )
+  // const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret, {
+  //   expiresIn: config.jwt_access_expires_in
+  // }as SignOptions )
+  const accessToken = jwtUtils.createToken(jwtPayload, config.jwt_access_secret, config.jwt_access_expires_in as SignOptions);
   
-  const refreshToken = jwt.sign(jwtPayload, config.jwt_refresh_secret, {
-    expiresIn: config.jwt_refresh_expires_in
-  } as SignOptions);
+  // const refreshToken = jwt.sign(jwtPayload, config.jwt_refresh_secret, {
+  //   expiresIn: config.jwt_refresh_expires_in
+  // } as SignOptions);
+  const refreshToken = jwtUtils.createToken(jwtPayload, config.jwt_refresh_secret, config.jwt_refresh_expires_in as SignOptions);
   return {
     accessToken,
     refreshToken
@@ -91,7 +94,8 @@ const refreshAccessToken = async (refreshToken: string) => {
   if (!refreshToken) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is required.");
   }
-  const verifyToken = jwt.verify(refreshToken, config.jwt_refresh_secret as string) as JwtPayload;
+  // const verifyToken = jwt.verify(refreshToken, config.jwt_refresh_secret as string) as JwtPayload;
+  const verifyToken = jwtUtils.verifyToken(refreshToken, config.jwt_refresh_secret) as JwtPayload;
   // console.log("verify token ", verifyToken);
   if (!verifyToken) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid or expired token.");
