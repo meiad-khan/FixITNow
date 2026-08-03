@@ -3,8 +3,9 @@ import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { IReviewPayload } from "./review.interface";
 import httpStatus from "http-status";
+import { CreateReviewPayload } from "./review.validation";
 
-const createReview = async (userId: string, payload: IReviewPayload) => {
+const createReview = async (userId: string, payload: CreateReviewPayload) => {
   const { bookingId, reviewText } = payload;
   const rating = Number(payload.rating);
   if (rating < 1 || rating > 5) {
