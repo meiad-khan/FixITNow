@@ -87,8 +87,8 @@ async function main() {
       experienceYears: 5,
       location: "Dhaka",
       availability: {
-        saturday: "9AM-5PM",
-        sunday: "9AM-5PM",
+        saturday: ["09:00-17:00"],
+        sunday: ["09:00-17:00"],
       },
     },
   });
@@ -104,7 +104,7 @@ async function main() {
       experienceYears: 7,
       location: "Chattogram",
       availability: {
-        monday: "10AM-6PM",
+        monday: ["10:00-18:00"],
       },
     },
   });
@@ -120,7 +120,7 @@ async function main() {
       experienceYears: 4,
       location: "Khulna",
       availability: {
-        friday: "8AM-4PM",
+        friday: ["08:00-16:00"],
       },
     },
   });
