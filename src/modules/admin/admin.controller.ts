@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import { adminServices } from "./admin.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { userParamSchema, userStatusUpdateShcema } from "./admin.validation";
 
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -18,8 +19,11 @@ const getAllUsers = catchAsync(
 
 const updateUserStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { userId } = req.params;
-    const payload = req.body;
+    // const { userId } = req.params;
+    const { userId } = userParamSchema.parse(req.params);
+
+    // const payload = req.body;
+    const payload = userStatusUpdateShcema.parse(req.body);
     const result=await adminServices.updateUserStatus(userId as string, payload)
     sendResponse(res, {
       success: true,

@@ -12,5 +12,6 @@ export const registerSchema = loginSchema.extend({
   role: z.enum(Role).default(Role.CUSTOMER),
 });
 
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
