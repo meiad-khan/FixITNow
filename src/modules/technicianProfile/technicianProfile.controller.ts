@@ -3,7 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { technicianServices } from "./technicianProfile.service";
 import httpStatus from "http-status";
 import { sendResponse } from "../../utils/sendResponse";
-import { createTechnicianProfileSchema, getSingleTechnicianProfileParamschema } from "./technicianProfile.validation";
+import { createTechnicianProfileSchema, getSingleTechnicianProfileParamschema, updateTechnicianProfileSchema } from "./technicianProfile.validation";
 
 const createTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -31,7 +31,8 @@ const getAllTechnician = catchAsync(async (req: Request, res: Response, next: Ne
   });
 })
 const updateTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const result = await technicianServices.updateTechnicianProfile(req.user?.id as string, req.body);
+  const payload = updateTechnicianProfileSchema.parse(req.body);
+  const result = await technicianServices.updateTechnicianProfile(req.user?.id as string, payload);
   
   sendResponse(res, {
     success: true,
@@ -43,8 +44,8 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response, n
 
 const getSingleTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // const { technicianId } = req.params;
-  const { technicianId } = getSingleTechnicianProfileParamschema.parse(req.body);
-  const result = await technicianServices.getSingleTechnicianProfile(technicianId as string);
+  const { technicianId } = getSingleTechnicianProfileParamschema.parse(req.params);
+  const result = await technicianServices.getSingleTechnicianProfile(technicianId);
   
   sendResponse(res, {
     success: true,
