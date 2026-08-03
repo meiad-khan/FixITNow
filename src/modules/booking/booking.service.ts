@@ -92,7 +92,12 @@ const getSingleBooking = async (bookingId: string) => {
         },
       },
       payments: {
+        where: {
+          status: "COMPLETED", // Filters to show only completed payments
+        },
         select: {
+          id: true,
+          amount: true,
           status: true,
         },
       },

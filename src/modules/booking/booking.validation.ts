@@ -6,4 +6,8 @@ export const createBookingSchema = z.object({
   customerNote: z.string().trim().optional(),
 });
 
+export const singleBookingParamSchema = z.object({
+  bookingId: z.uuid("BookingId is required"),
+})
+
 export type CreateBookingPayload = z.infer<typeof createBookingSchema>;

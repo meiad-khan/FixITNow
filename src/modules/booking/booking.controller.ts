@@ -4,7 +4,7 @@ import { bookingServices } from "./booking.service";
 import httpStatus from "http-status";
 import { BookingStatus } from "../../../prisma/generated/prisma/enums";
 import { sendResponse } from "../../utils/sendResponse";
-import { createBookingSchema } from "./booking.validation";
+import { createBookingSchema, singleBookingParamSchema } from "./booking.validation";
 
 const createBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +39,8 @@ const getUserBooking = catchAsync(
 
 const getSingleBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await bookingServices.getSingleBooking(req.params.bookingId as string);
+    const { bookingId } = singleBookingParamSchema.parse(req.params);
+    const result = await bookingServices.getSingleBooking(bookingId);
      
     sendResponse(res, {
       success: true,
