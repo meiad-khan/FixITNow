@@ -2,8 +2,9 @@ import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma"
 import { ICreateCategory } from "./category.interface"
 import httpStatus from "http-status";
+import { CreateCategoryPayload } from "./category.validation";
 
-const createCategory = async (payload: ICreateCategory) => {
+const createCategory = async (payload: CreateCategoryPayload) => {
   const { categoryName, description, status } = payload;
   const isCategoryExist = await prisma.category.findUnique({
     where: {
