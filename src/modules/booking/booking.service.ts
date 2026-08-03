@@ -7,8 +7,9 @@ import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateBooking } from "./booking.interface";
 import httpStatus from "http-status";
+import { CreateBookingPayload } from "./booking.validation";
 
-const createBooking = async (userId: string, payload: ICreateBooking) => {
+const createBooking = async (userId: string, payload: CreateBookingPayload) => {
   const isUserExist = await prisma.user.findUnique({
     where: {
       id: userId,
