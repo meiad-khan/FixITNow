@@ -18,11 +18,20 @@ export const globalError:ErrorRequestHandler = (err: any, req: Request, res: Res
      errorDetails = err.issues.map((i) => ({ path: i.path.join("."), message: i.message }));
    }else if (err instanceof Prisma.PrismaClientKnownRequestError) {
      switch (err.code) {
-       case "P2002":
-         statusCode = httpStatus.CONFLICT;
-          const field = (err.meta?.target as string[])?.join(", ");
-          message = `${field} already exists`;
-         break;
+       case "P2002": 
+      statusCode = httpStatus.CONFLICT;
+
+      const target = err.meta?.target;
+      let field = "Field";
+
+      if (Array.isArray(target)) {
+        field = target.join(", ");
+      } else if (typeof target === "string") {
+        field = target;
+      }
+
+      message = `${field} already exists`;
+      break;
        case "P2003":
          statusCode = httpStatus.BAD_REQUEST;
            message = "Foreign key constraint failed";

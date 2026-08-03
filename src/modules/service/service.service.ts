@@ -3,8 +3,9 @@ import AppError from "../../errors/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateService, ServiceQueryPayload } from "./service.interface";
 import httpStatus from "http-status";
+import { CreateServicePayload } from "./service.validation";
 
-const createService = async (payload: ICreateService) => {
+const createService = async (payload: CreateServicePayload) => {
   const { technicianId, categoryId } = payload;
   const isCategoryExist = await prisma.category.findUnique({
     where: {
