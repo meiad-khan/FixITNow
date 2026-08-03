@@ -4,7 +4,7 @@ import { bookingServices } from "./booking.service";
 import httpStatus from "http-status";
 import { BookingStatus } from "../../../prisma/generated/prisma/enums";
 import { sendResponse } from "../../utils/sendResponse";
-import { createBookingSchema, singleBookingParamSchema } from "./booking.validation";
+import { createBookingSchema, singleBookingParamSchema, updateBookingStatusParamSchema, updateBookingStatusPayloadSchema } from "./booking.validation";
 
 const createBooking = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -69,8 +69,11 @@ const getTechnicianBookings = catchAsync(
 const changeBookingStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    const { bookingId } = req.params;
-    const payload = req.body;
+    // const { bookingId } = req.params;
+    const { bookingId } = updateBookingStatusParamSchema.parse(req.params);
+
+    // const payload = req.body;
+    const payload = updateBookingStatusPayloadSchema.parse(req.body);
     const result = await bookingServices.changeBookingStatus(userId as string, bookingId as string, payload);
     
     sendResponse(res, {
@@ -85,7 +88,9 @@ const changeBookingStatus = catchAsync(
 const handleCancelBooking=catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id;
-    const bookingId = req.params.bookingId;
+    // const bookingId = req.params.bookingId;
+    const { bookingId } = updateBookingStatusParamSchema.parse(req.params)
+    
     const result = await bookingServices.cancelBooking(userId as string, bookingId as string);
      
     sendResponse(res, {
