@@ -1,4 +1,4 @@
-export interface ICreateTechnicianProfile{
+export interface ICreateTechnicianProfile {
   profilePhoto?: string;
   bio: string;
   experienceYears: number;
@@ -22,14 +22,14 @@ interface IAvailability {
   sunday?: string[];
 }
 
-export interface TechnicianQueryPayload{
+export interface TechnicianQueryPayload {
   searchTerm?: string;
   location?: string;
   category?: string;
   serviceName?: string;
   minExperience?: string;
   maxExperience?: string;
-  
+
   page?: string;
   limit?: string;
   sortBy?: string;

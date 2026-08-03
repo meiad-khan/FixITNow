@@ -10,6 +10,7 @@ router.post(
   auth(Role.TECHNICIAN),
   technicianController.createTechnicianProfile
 );
+
 router.get(
   "/",
   technicianController.getAllTechnician

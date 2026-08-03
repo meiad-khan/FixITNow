@@ -3,11 +3,14 @@ import { catchAsync } from "../../utils/catchAsync";
 import { technicianServices } from "./technicianProfile.service";
 import httpStatus from "http-status";
 import { sendResponse } from "../../utils/sendResponse";
+import { createTechnicianProfileSchema, getSingleTechnicianProfileParamschema } from "./technicianProfile.validation";
 
 const createTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+  const payload = createTechnicianProfileSchema.parse(req.body);
   const result = await technicianServices.createTechnicianProfile(
     req.user?.id as string,
-    req.body);
+    payload);
   
   sendResponse(res, {
     success: true,
@@ -39,7 +42,8 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response, n
 })
 
 const getSingleTechnicianProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const { technicianId } = req.params;
+  // const { technicianId } = req.params;
+  const { technicianId } = getSingleTechnicianProfileParamschema.parse(req.body);
   const result = await technicianServices.getSingleTechnicianProfile(technicianId as string);
   
   sendResponse(res, {
